@@ -1,0 +1,8 @@
+__pycache__/
+.venv/
+.idea/
+.vscode/
+poetry.lock
+dist/
+.ruff_cache/
+*.cast

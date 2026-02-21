@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "labyrinth_game"
+version = "0.1.0"
+description = "Текстовая приключенческая игра. Исследуйте лабиринт, решайте загадки и найдите сокровища!"
+authors = ["Boris Amelyakin <superboris2001@yandex.ru>"]
+readme = "README.md"
+packages = [
+    { include = "labyrinth_game" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.13.2"
+
+[tool.poetry.scripts]
+project = "labyrinth_game.main:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+exclude = ["venv", ".venv", "__pycache__", "dist"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = []
