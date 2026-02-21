@@ -11,57 +11,64 @@ game_state = {
 
 
 def process_command(game_state, command):
+    """
+    Обрабатывает команду пользователя.
+    
+    Args:
+        game_state (dict): Словарь, содержащий текущее состояние игры.
+        command (str): Введенная пользователем строка.
+    """
+    # Разделяем строку на части
     parts = command.strip().lower().split()
     if not parts:
         return
-
+    
     cmd = parts[0]
-    arg = " ".join(parts[1:]) if len(parts) > 1 else None
-
-    # Словарь простых команд (match-case не поддерживается в Python 3.9)
-    simple_commands = {
-        "help": lambda: player_actions.show_help(constants.COMMANDS),
-        "h": lambda: player_actions.show_help(constants.COMMANDS),
-        "look": lambda: utils.describe_current_room(game_state),
-        "l": lambda: utils.describe_current_room(game_state),
-        "inventory": lambda: player_actions.show_inventory(game_state),
-        "i": lambda: player_actions.show_inventory(game_state),
-    }
-
-    if cmd in simple_commands:
-        simple_commands[cmd]()
-    elif cmd in ("go", "g"):
-        if arg:
-            player_actions.move_player(game_state, arg)
-        else:
-            print("Куда идти? Укажите направление.")
-    elif cmd in ("take", "t"):
-        if arg:
-            player_actions.take_item(game_state, arg)
-        else:
-            print("Что взять? Укажите предмет.")
-    elif cmd in ("use", "u"):
-        if not arg:
-            print("Что использовать? Укажите предмет.")
-        elif arg in ("treasure_chest", "treasure chest"):
-            if game_state["current_room"] == "treasure_room":
+    arg = ' '.join(parts[1:]) if len(parts) > 1 else None
+    
+    match cmd:
+        case 'help' | 'h':
+            player_actions.show_help(constants.COMMANDS)
+        case 'look' | 'l':
+            utils.describe_current_room(game_state)
+        case 'go' | 'g':
+            if arg:
+                player_actions.move_player(game_state, arg)
+            else:
+                print("Куда идти? Укажите направление.")
+        case 'take' | 't':
+            if arg:
+                player_actions.take_item(game_state, arg)
+            else:
+                print("Что взять? Укажите предмет.")
+        case 'inventory' | 'i':
+            player_actions.show_inventory(game_state)
+        case 'use' | 'u':
+            if arg:
+                # Специальная обработка для сундука с сокровищами
+                if arg == 'treasure_chest' or arg == 'treasure chest':
+                    if game_state['current_room'] == 'treasure_room':
+                        utils.attempt_open_treasure(game_state)
+                    else:
+                        print("Здесь нет сундука с сокровищами.")
+                else:
+                    player_actions.use_item(game_state, arg)
+            else:
+                print("Что использовать? Укажите предмет.")
+        case 'solve' | 's':
+            # Если игрок в treasure_room, вызываем attempt_open_treasure
+            if game_state['current_room'] == 'treasure_room':
                 utils.attempt_open_treasure(game_state)
             else:
-                print("Здесь нет сундука с сокровищами.")
-        else:
-            player_actions.use_item(game_state, arg)
-    elif cmd in ("solve", "s"):
-        if game_state["current_room"] == "treasure_room":
-            utils.attempt_open_treasure(game_state)
-        else:
-            utils.solve_puzzle(game_state)
-    elif cmd in ("quit", "exit", "q"):
-        print("Спасибо за игру!")
-        game_state["game_over"] = True
-    elif cmd in ("north", "south", "east", "west"):
-        player_actions.move_player(game_state, cmd)
-    else:
-        print("Неизвестная команда. Введите 'help' для списка команд.")
+                utils.solve_puzzle(game_state)
+        case 'quit' | 'exit' | 'q':
+            print("Спасибо за игру!")
+            game_state['game_over'] = True
+        case 'north' | 'south' | 'east' | 'west':
+            # Односложные команды для движения
+            player_actions.move_player(game_state, cmd)
+        case _:
+            print("Неизвестная команда. Введите 'help' для списка команд.")
 
 
 def main():
