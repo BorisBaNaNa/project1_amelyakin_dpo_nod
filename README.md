@@ -49,7 +49,7 @@ make project
      
      Затем загрузите на asciinema.org и вставьте ссылку ниже:
 -->
-
+[![asciicast](https://asciinema.org)](https://asciinema.org/a/eWBZUmlBwdu1Qt06)
 
 ## Как играть
 
